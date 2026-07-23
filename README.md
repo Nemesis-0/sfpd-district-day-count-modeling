@@ -1,14 +1,14 @@
 # San Francisco Police Incident Analysis: PySpark and Count Modeling
 
-This project analyzes San Francisco Police Department (SFPD) incident reports using PySpark, Spark SQL, and statistical count modeling. The analysis emphasizes reproducible data processing, careful construction of analytical units, temporal and geographic patterns, model diagnostics, and robustness assessment.
+This project analyzes San Francisco Police Department (SFPD) incident reports using **PySpark, Spark SQL, and statistical count modeling**. The analysis emphasizes reproducible data processing, careful construction of analytical units, temporal and geographic patterns, model diagnostics, and robustness assessment.
 
 ## Project Overview
 
-The raw DataSF dataset contains more than one million rows, with multiple rows potentially associated with the same police report because a report may contain multiple incident categories. The analysis therefore distinguishes row-level, report-level, and report-category-level records before constructing the primary analytical datasets.
+The raw DataSF dataset contains more than one million rows, with multiple rows potentially associated with the same police report because a report may contain multiple incident categories. The analysis therefore distinguishes **row-level, report-level, and report-category-level** records before constructing the primary analytical datasets.
 
-The main analysis focuses on `Initial`, `Coplogic Initial`, and `Vehicle Initial` reports from January 1, 2018 through December 31, 2025. Supplement reports are excluded so that later updates to existing reports are not counted as new report occurrences.
+The main analysis focuses on `Initial`, `Coplogic Initial`, and `Vehicle Initial` reports from **January 1, 2018 through December 31, 2025**. Supplement reports are excluded so that later updates to existing reports are not treated as new report occurrences.
 
-Temporal summaries and district-day counts are indexed by the recorded incident date rather than the report-filing date.
+Temporal summaries and district-day counts are indexed by the recorded **Incident Date** rather than the report-filing date.
 
 ## Data
 
@@ -16,9 +16,13 @@ Temporal summaries and district-day counts are indexed by the recorded incident 
 **Snapshot date:** July 22, 2026  
 **Primary analysis period:** January 1, 2018 – December 31, 2025
 
-The raw snapshot contains **1,048,600 rows** and **869,759 unique report IDs**. After restricting the analysis to complete calendar years from 2018 through 2025 and defining the primary Initial-report population, the analysis contains **709,510 Initial-report IDs**.
+The raw snapshot contains:
 
-The raw CSV is not included in this repository because of its size. To reproduce the analysis, download the dataset from DataSF and save it locally as:
+- **1,048,600 rows**
+- **869,759 unique report IDs**
+- **709,510 Initial-report IDs** in the primary analysis population
+
+The raw CSV is not included in this repository because of its size. To reproduce the analysis, download the DataSF dataset and save the snapshot locally as:
 
 ```text
 sfpd_incidents_2018_present_2026-07-22.csv
@@ -31,7 +35,7 @@ The project includes:
 - PySpark-based data ingestion and schema normalization
 - Missingness and data-type validation
 - Record-level consistency checks across report IDs
-- Distinction between report-level and report-category-level analytical units
+- Construction of report-level and report-category-level analytical datasets
 - Spark SQL analysis of temporal, categorical, and geographic patterns
 - Construction of a complete police-district-by-day count panel
 - Poisson regression as a baseline count model
@@ -53,7 +57,7 @@ The magnitude of these long-term changes is substantially larger than the pooled
 
 **Larceny Theft** is the most prevalent category, appearing in approximately **38% of Initial reports** over the full analysis period.
 
-Category composition changes over time. Several major categories, including Malicious Mischief, Motor Vehicle Theft, and Burglary, increase in relative prevalence around 2020. Motor Vehicle Theft remains relatively elevated through 2024, while the increases in Malicious Mischief and Burglary are less persistent.
+Category composition also changes over time. Malicious Mischief, Motor Vehicle Theft, and Burglary all increase in relative prevalence around 2020, although the persistence of these changes differs across categories. Motor Vehicle Theft remains relatively elevated through 2024, while the increases in Malicious Mischief and Burglary are less persistent.
 
 Because a report may contain multiple incident categories, category prevalence is non-exclusive and does not sum to 100%.
 
@@ -61,7 +65,7 @@ Because a report may contain multiple incident categories, category prevalence i
 
 Among in-city Initial reports, **Central** accounts for the largest cumulative share, followed by **Northern, Mission, and Southern**.
 
-District composition is not constant across years. Central represents a smaller share of reports in later years, while districts including Southern and Tenderloin become relatively more prominent.
+District composition changes over time. Central represents a smaller share of reports in later years, while districts including Southern and Tenderloin become relatively more prominent.
 
 These results describe report volume rather than population- or exposure-adjusted crime risk.
 
@@ -69,12 +73,12 @@ These results describe report volume rather than population- or exposure-adjuste
 
 Across the pooled 2018–2025 period:
 
-- April has the lowest mean daily Initial-report volume.
-- August has the highest mean daily Initial-report volume.
-- Friday has the highest mean daily volume across weekdays.
-- Sunday has the lowest.
+- **April** has the lowest mean daily Initial-report volume.
+- **August** has the highest mean daily Initial-report volume.
+- **Friday** has the highest mean daily volume across weekdays.
+- **Sunday** has the lowest.
 
-Recorded incident times exhibit substantial heaping at round clock times, particularly minutes `00` and `30`, so hourly patterns are interpreted cautiously.
+Recorded incident times also exhibit substantial heaping at round clock times, particularly minutes `00` and `30`, so hourly patterns are interpreted cautiously.
 
 ## Count Modeling
 
@@ -82,13 +86,13 @@ The modeled outcome is the number of Initial-report IDs associated with each inc
 
 For district $d$ and date $t$, the primary model is:
 
-$$
+```math
 Y_{dt} \sim \mathrm{NB2}(\mu_{dt}, \alpha)
-$$
+```
 
 with
 
-$$
+```math
 \log(\mu_{dt})
 =
 \beta_0
@@ -100,15 +104,15 @@ $$
 \beta_{\mathrm{month}(t)}
 +
 \beta_{\mathrm{weekday}(t)}
-$$
+```
 
 and conditional variance
 
-$$
+```math
 \mathrm{Var}(Y_{dt}\mid X)
 =
 \mu_{dt}+\alpha\mu_{dt}^{2}.
-$$
+```
 
 The reference categories are:
 
@@ -141,11 +145,11 @@ After simultaneously adjusting for district, year, month, and weekday:
 
 - Expected daily report volume in **2025 is approximately 62.5% of the corresponding 2018 level**.
 - Geographic differences across police districts remain substantial.
-- Calendar-month effects are comparatively modest relative to the annual changes.
+- Calendar-month effects are comparatively modest relative to the annual shifts.
 - August remains slightly above the January reference level, while March and April are lower.
 - Friday remains approximately **10% above Monday**, while Sunday remains below the Monday reference level.
 
-These estimates represent adjusted associations and are not interpreted causally.
+These estimates represent **adjusted associations rather than causal effects**.
 
 ## Model Diagnostics and Sensitivity Analysis
 
@@ -167,7 +171,7 @@ The substantive effect estimates are highly stable between NB2 and GEE:
 - Mean relative count-ratio difference: **0.172%**
 - Maximum relative count-ratio difference: **0.899%**
 
-The GEE analysis is therefore used as a sensitivity analysis for coefficient stability rather than as a replacement for the primary NB2 specification.
+The GEE analysis is therefore used as a **coefficient-stability sensitivity analysis** rather than as a replacement for the primary NB2 specification.
 
 ## Interpretation and Limitations
 
@@ -185,17 +189,21 @@ District effects therefore represent differences in expected report counts rathe
 
 ### Observational Interpretation
 
-The models estimate adjusted associations rather than causal effects. Year indicators summarize differences across years after adjustment for district, month, and weekday, but they do not identify the causes of those changes.
+The models estimate adjusted associations rather than causal effects. Year indicators summarize differences across years after adjustment for district, month, and weekday, but they do not identify the causes of those differences.
+
+### Recorded Incident Time
+
+The incident-time field exhibits substantial heaping at round clock times. Hourly patterns should therefore be interpreted as patterns in recorded incident times rather than precise behavioral timing.
 
 ### Temporal Dependence
 
 NB2 substantially improves the variance specification but does not eliminate within-district temporal dependence.
 
-The GEE sensitivity analysis indicates that the principal effect estimates are highly stable to an AR(1) working correlation structure. However, only 10 police-district clusters are available, so GEE robust standard errors and significance tests are not emphasized.
+The GEE sensitivity analysis indicates that the principal effect estimates are highly stable to an AR(1) working correlation structure. However, only **10 police-district clusters** are available, so GEE robust standard errors and significance tests are not emphasized.
 
 ### Additive Mean Structure
 
-The primary count model uses additive district and calendar effects and does not include district-by-year interactions or district-specific temporal trends.
+The primary model uses additive district and calendar effects and does not include district-by-year interactions or district-specific temporal trends.
 
 Adjusted district effects should therefore be interpreted as average differences across the 2018–2025 study period rather than as time-invariant district relationships.
 
@@ -235,7 +243,12 @@ pip install -r requirements.txt
 sfpd_incidents_2018_present_2026-07-22.csv
 ```
 
-3. Install the required Python packages.
+3. Install the required Python packages:
+
+```bash
+pip install -r requirements.txt
+```
+
 4. Ensure Java 17 is available for PySpark.
 5. Open and run:
 
@@ -244,3 +257,5 @@ sfpd_incident_analysis.ipynb
 ```
 
 The notebook uses `America/Los_Angeles` as the Spark SQL session time zone.
+
+The current notebook contains a local Homebrew Java 17 path in the environment setup cell. Users on other systems may need to update `JAVA_HOME` to match their local Java installation.
