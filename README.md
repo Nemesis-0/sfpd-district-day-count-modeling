@@ -1,4 +1,4 @@
-# San Francisco Police Incident Analysis: PySpark and Count Modeling
+# District-Day Count Modeling of Police Incident Reports
 
 This project analyzes San Francisco Police Department (SFPD) incident reports using **PySpark, Spark SQL, and statistical count modeling**. The analysis emphasizes reproducible data processing, careful construction of analytical units, temporal and geographic patterns, model diagnostics, and robustness assessment.
 
