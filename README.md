@@ -210,8 +210,7 @@ Adjusted district effects should therefore be interpreted as average differences
 ## Repository Files
 
 ```text
-sfpd_incident_analysis.ipynb   # Complete analysis notebook
-sfpd_incident_analysis.html    # Static rendered version
+sfpd_district_day_count_modeling.ipynb   # Complete analysis notebook
 requirements.txt               # Python dependencies
 .gitignore                     # Excludes raw data and local files
 ```
@@ -253,7 +252,7 @@ pip install -r requirements.txt
 5. Open and run:
 
 ```text
-sfpd_incident_analysis.ipynb
+sfpd_district_day_count_modeling.ipynb
 ```
 
 The notebook uses `America/Los_Angeles` as the Spark SQL session time zone.
